@@ -1,0 +1,43 @@
+pluginManagement {
+    def flutterProjectRoot = rootProject.projectDir.parentFile
+    if (flutterProjectRoot.name == 'host_app') {
+        flutterProjectRoot = flutterProjectRoot.parentFile
+    }
+
+    def plugins = new File(flutterProjectRoot.absolutePath + '/.flutter-plugins')
+    if (plugins.exists()) {
+        plugins.readLines().each { line ->
+            def plugin = line.split('=')
+            if (plugin.size() == 2) {
+                def pluginName = plugin[0]
+                def pluginPath = plugin[1]
+                include ':' + pluginName
+                project(':' + pluginName).projectDir = new File(flutterProjectRoot, pluginPath)
+            }
+        }
+    }
+
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "cronometro_app"
+
+include ':app'
+
+setBinding(new Binding([gradle: this]))
+evaluate(new File(
+  settingsDir.parentFile,
+  ''.join(['flutter', '.gradle'])
+))
